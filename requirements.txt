@@ -1,0 +1,6 @@
+enlighten==1.4.0
+numpy==1.18.1
+pandas==1.0.1
+scapy==2.4.3
+ipaddress
+argparse
