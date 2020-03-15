@@ -1,6 +1,26 @@
 ## Port scanner
 This is a mid-term project in a Computer System Security class.
 
+### Functionality
+This tool can scan ports on networked systems with the following types of scans:
+* Full TCP handshake
+* SYN scan (stealth attack)
+* ACK attack
+* XMAS scan (a christmas tree packet with FIN, URG and PSH flags)
+
+Hosts to scan can be provided as:
+* A single hostname / ip address as a string flag
+* A txt file with list of ip addresses seperated by newline
+* A single address in CIDR notation as a string flag
+
+Ports to scan can be provided as:
+* A range of ports as integer flags
+* A txt file with list of ports seperated by newline
+* Built in list of 50 most popular ports (defined by wikipedia)
+
+By default it performs **host discovery** before scanning provided hosts. Optionally it can **shuffle** the hosts and ports before starting the scan to better avoid detection. After scanning a summary of the results is printed along with a list of open ports. Results are also output to a csv file.
+
+
 ### Prerequisites
 The project uses python3 and scapy which works best on linux platforms. For SYN scanning root access is needed. Example run batch script is included.
 

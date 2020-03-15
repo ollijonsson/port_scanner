@@ -24,8 +24,8 @@ class Scanner():
         self.rand_ports = rand_ports
         self.rand_ips = rand_ips
 
-    # Discover active hosts for target
     def discover_hosts(self, hosts):
+        """ Host discovery of a list of hosts. """
         active_hosts = []
         for target in hosts:
             ans, _ = sr(IP(dst=target) / ICMP(), verbose=False, timeout=5)
@@ -34,8 +34,8 @@ class Scanner():
                 active_hosts.append(b.src) # Append active host
         return active_hosts
 
-    # Check if host is online
     def check_host(self, host):
+        """ Check if host is online """
         try:
             ip = IP(dst=host)
             icmp = ICMP()
@@ -43,17 +43,9 @@ class Scanner():
             return True
         except Exception:
             return False
-
-    # Generate ACK packet
-    def ack(self, src_port, port, seq, ack):
-        return TCP(sport=src_port, dport=port, flags='A', seq=seq, ack=ack)
     
-    # Generate RST packet
-    def rst(self, src_port, port):
-        return TCP(sport=src_port, dport=port, flags='R')
-    
-    # Full TCP handshake scan
     def syn_scan(self, ip, sport, dport, full_scan):
+        """ Perform a full tcp handshake scan or a SYN scan """
         SYN = TCP(sport=sport, dport=dport, flags='S')
 
         # Send SYN and recieve SYNACK or RSTACK
@@ -72,7 +64,7 @@ class Scanner():
 
                     # If SYN scan, send RST back
                     if not full_scan:
-                        RST = self.rst(sport, dport)
+                        RST = TCP(sport=sport, dport=dport, flags='R')
                         send(RST, verbose=False)
                     # If FULL scan, send ACK back
                     else:
@@ -92,8 +84,9 @@ class Scanner():
         else:
             return 'closed'
 
-    # ACK scan to find unfiltered ports
+    
     def ack_scan(self, ip, sport, dport):
+        """ Perform an ACK scan """
         ACK = TCP(dport=dport, flags='A')
         ACK_SCAN = sr1(ip/ACK, timeout=self.timeout, verbose=False)
 
@@ -118,8 +111,8 @@ class Scanner():
             else:
                 return None
     
-    # XMAS scan
     def xmas_scan(self, ip, sport, dport):
+        """ Perform a XMAS scan """
         XMAS = TCP(sport=sport, dport=dport, flags='FPU')
         XMAS_SCAN = sr1(ip/XMAS, timeout=self.timeout, verbose=False)
 
@@ -146,6 +139,7 @@ class Scanner():
                 return None
 
     def scan_port(self, target, port):
+        """ Scan a single port with selected type of scanning """
         sport = RandShort() # Source port
         ip = IP(dst=target) # IP
         
@@ -177,6 +171,7 @@ class Scanner():
                 dport=port)
 
     def scan(self, hosts, ports):
+        """ Scans all provided hosts with the selected options. """
         if self.host_discovery:
             hosts = self.discover_hosts(hosts)
         if self.rand_ips:
